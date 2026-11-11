@@ -2,9 +2,8 @@
 
 **Asignatura:** Modelos de Programación  
 **Docente:** Bocanegra  
-**Integrantes:**
-- Eddie Santiago Rondón Capera – 20251020108
-- Luna Alejandra Sandoval Rodríguez – 20241020053
+**Integrante:**
+- Alejandro Escobar Barrios – 20251020095
 
 Proyecto Java que diagnostica y rescata los cuatro antipatrones del sistema
 heredado del Consulado Caótico. La versión heredada vive en el paquete
