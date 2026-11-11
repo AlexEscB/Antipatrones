@@ -1,0 +1,95 @@
+=== TALLER DE ANTIPATRONES: LA OFICINA DE VISAS DEL CAOS ===
+
+------------------------------------------------------------
+CASO 1 - God Object: tramitar la visa de un viajero
+------------------------------------------------------------
+>> VERSION HEREDADA (OficinaDeTodo lo hace todo):
+Cobrando $160.0 a Luna Sandoval
+Guardando expediente de Luna Sandoval
+Correo para Luna Sandoval: su visa va en camino
+
+>> VERSION RESCATADA (una clase por responsabilidad):
+[Rescate] Caja: cobrando $160.0 a Luna Sandoval
+[Rescate] Expedientes: expediente guardado de Luna Sandoval
+[Rescate] Correo para Luna Sandoval: su visa va en camino
+
+>> Ambas aprueban el tramite, pero en la rescatada la salida
+   muestra quien hace cada tarea y nadie se enferma de Ramiro.
+
+------------------------------------------------------------
+CASO 2 - Copy-Paste: subir la tarifa base de 50 a 60
+------------------------------------------------------------
+>> VERSION HEREDADA con tarifa base 50 (6 meses):
+   Turista: $310.0
+   Estudiante: $155.0
+   Trabajo: $465.0
+
+>> Se ordena subir la tarifa base de 50 a 60...
+>> VERSION HEREDADA: hay que editar el 50 en cada metodo copiado
+   Edicion 1 de 3: visaTurista cambia 50 por 60
+   Edicion 2 de 3: visaEstudiante cambia 50 por 60
+   Edicion 3 de 3: visaTrabajo cambia 50 por 60
+   Turista: $370.0
+   Estudiante: $185.0
+   Trabajo: $555.0
+
+>> VERSION STRATEGY: basta tocar ParametrosTarifa
+   Edicion 1 de 1: ParametrosTarifa cambia la tarifa base a 60
+   Turista: $370.0
+   Estudiante: $185.0
+   Trabajo: $555.0
+
+>> El precio final coincide en ambas, pero una costo 3 ediciones
+   y la otra solo 1.
+
+------------------------------------------------------------
+CASO 3 - Magic Numbers: evaluar tipo 2 con edad 20 y probar el tipo 9
+------------------------------------------------------------
+>> VERSION HEREDADA (tipo 2, edad 20): APROBADA
+>> VERSION HEREDADA (tipo 9, edad 20): RECHAZADA
+   Rechazo en silencio: nadie sabe que significa el 9.
+
+>> VERSION RESCATADA (TipoVisa.ESTUDIANTE, edad 20):
+   APROBADA: la visa ESTUDIANTE admite la edad indicada
+>> VERSION RESCATADA (tipo 9, edad 20):
+   RECHAZADA: el tipo de visa 9 no existe, use TURISTA, ESTUDIANTE o TRABAJO
+>> El resultado del caso valido es el mismo y el tipo 9 recibe
+   un mensaje claro en lugar de un rechazo inexplicable.
+
+------------------------------------------------------------
+CASO 4 - Acoplamiento fuerte: cancelar una solicitud
+------------------------------------------------------------
+>> VERSION HEREDADA (SolicitudAcoplada):
+[Heredado] Correo: su solicitud fue cancelada
+[Heredado] Citas: cupo liberado en la agenda
+   Estado final: CANCELADA
+   La caja de pagos nunca se entero: el reembolso se pierde.
+
+>> VERSION RESCATADA (Observer):
+[Rescate] Correo: cancelacion notificada a Eddie Rondon
+[Rescate] Citas: cupo liberado de Eddie Rondon
+[Rescate] Pagos: reembolso generado para Eddie Rondon
+   Estado final: CANCELADA
+>> La solicitud no conoce a los servicios: cada uno se suscribe
+   y reacciona al evento por su cuenta.
+
+------------------------------------------------------------
+CASO 5 - Integracion: viaje completo con la version rescatada
+------------------------------------------------------------
+>> Solicitar y cobrar:
+[Rescate] Caja: cobrando $185.0 a Luna Sandoval
+[Rescate] Expedientes: expediente guardado de Luna Sandoval
+[Rescate] Correo para Luna Sandoval: su visa va en camino
+>> Evaluar:
+   APROBADA: la visa ESTUDIANTE admite la edad indicada
+>> Cancelar:
+[Rescate] Correo: cancelacion notificada a Luna Sandoval
+[Rescate] Citas: cupo liberado de Luna Sandoval
+[Rescate] Pagos: reembolso generado para Luna Sandoval
+
+=== TABLA FINAL: ANTIPATRONES CAPTURADOS ===
+Antipatron           | Sintoma                                        | Solucion
+God Object           | Ramiro hace todo en una sola clase             | Responsabilidad unica: una clase por tarea
+Copy-Paste           | La misma formula copiada en 3 metodos          | Strategy: la tarifa base cambia en un solo lugar
+Magic Numbers        | tipo == 3 y 0.5 sin nombre ni sentido          | Enum TipoVisa y constantes con nombre
+Acoplamiento fuerte  | Cancelar exige llamar servicios a mano         | Observer: la solicitud solo publica el evento
